@@ -38,7 +38,6 @@ def test_invoking123():
     driver.implicitly_wait(30)
     driver.maximize_window()
     driver.get("http://google.com")
-
     assert "Google" in driver.title
 
 
