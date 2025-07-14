@@ -1,0 +1,24 @@
+[
+{
+    "test_id": "TC001_ValidLogin",
+    "username": "testuser1",
+    "password": "password123",
+    "expected_url_part": "/dashboard",
+    "expected_message_on_login": "Welcome, testuser1!"
+  },
+  {
+    "test_id": "TC002_InvalidPassword",
+    "username": "testuser2",
+    "password": "wrongpassword",
+    "expected_url_part": "/login",
+    "expected_error_message": "Invalid credentials."
+  },
+  {
+    "test_id": "TC003_EmptyFields",
+    "username": "",
+    "password": "",
+    "expected_url_part": "/login",
+    "expected_error_message": "Please enter username and password."
+  }
+
+]
