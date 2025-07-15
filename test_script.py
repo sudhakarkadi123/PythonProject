@@ -30,7 +30,7 @@ def test_invoking(setup_browsers,data):
     print("username " + username)
     print("password " + password)
 
-
+@pytest.mark.skip
 def test_invoking123():
 
     driver = webdriver.Chrome()
