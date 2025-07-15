@@ -1,0 +1,54 @@
+name: Python Pytest Selenium Tests
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10' # or 3.8, 3.9, 3.11, etc.
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run Selenium tests on Chrome
+      # The webdriver-manager library will automatically download and set up
+      # the correct ChromeDriver executable for the runner's environment.
+      # You must have configured your test to accept a --headless argument.
+      run: |
+        pytest --browser chrome --headless
+
+    - name: Run Selenium tests on Firefox
+      # Run tests on a different browser to ensure cross-browser compatibility
+      run: |
+        pytest --browser firefox --headless
+
+    - name: Run Selenium tests on Edge
+      # Run tests on a different browser to ensure cross-browser compatibility
+      run: |
+        pytest --browser edge --headless
+    
+    # This step is optional but highly recommended to get detailed reports
+    - name: Archive test report
+      if: always() # Run this step even if the tests fail
+      uses: actions/upload-artifact@v4
+      with:
+        name: pytest-report
+        path: report.html # Assumes your pytest.ini/command outputs to report.html
