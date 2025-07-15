@@ -10,7 +10,7 @@ def data_te():
 
 
 @pytest.mark.parametrize("data",data_te())
-def test_invoking(setup_browsers,data):
+def test_invoking(driver_make,data):
 
     print("After assigning the values")
     print(data)
@@ -19,8 +19,8 @@ def test_invoking(setup_browsers,data):
     # driver.implicitly_wait(30)
     # driver.maximize_window()
     # driver.get("http://google.com")
-    driver = setup_browsers
-
+    driver = driver_make
+    driver.get("http://google.com")
 
     assert "Google" in driver.title
     print("test_Invoking")

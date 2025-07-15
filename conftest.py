@@ -2,6 +2,15 @@ import time
 import pytest
 from selenium import webdriver
 import json
+from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.webdriver.firefox.service import Service as FirefoxService
+from selenium.webdriver.edge.service import Service as EdgeService
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from selenium.webdriver.edge.options import Options as EdgeOptions
+from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.firefox import GeckoDriverManager
+from webdriver_manager.microsoft import EdgeChromiumDriverManager
 
 @pytest.fixture(scope="function")
 def load_data():
@@ -18,6 +27,50 @@ def setup_module():
     driver.get("http://google.com")
     yield driver
     driver.quit()
+
+def pytest_addoption(parser):
+    parser.addoption(
+        "--browser", action="store", default="chrome", help="Specify browser: chrome, firefox, edge"
+    )
+    parser.addoption(
+        "--headless", action="store_true", default=False, help="Run browser in headless mode"
+    )
+@pytest.fixture(scope="function")
+def driver_make(request):
+    browser_name = request.config.getoption("--browser")
+    headless_mode = request.config.getoption("--headless") # Get the boolean value of the --headless flag
+
+    print(f"\n[Fixture] Initializing {browser_name} browser (headless: {headless_mode})...")
+
+    driver_instance = None
+    if browser_name == "chrome":
+        chrome_options = ChromeOptions()
+        if headless_mode:
+            chrome_options.add_argument("--headless=new") # For newer Chrome versions
+            chrome_options.add_argument("--disable-gpu")
+            chrome_options.add_argument("--no-sandbox")
+        driver_instance = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
+    elif browser_name == "firefox":
+        firefox_options = FirefoxOptions()
+        if headless_mode:
+            firefox_options.add_argument("-headless") # Firefox uses a different headless flag syntax
+        driver_instance = webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()), options=firefox_options)
+    elif browser_name == "edge":
+        edge_options = EdgeOptions()
+        if headless_mode:
+            edge_options.add_argument("--headless=new")
+            edge_options.add_argument("--disable-gpu")
+        driver_instance = webdriver.Edge(service=EdgeService(EdgeChromiumDriverManager().install()), options=edge_options)
+    else:
+        pytest.fail(f"Unsupported browser: {browser_name}")
+
+    driver_instance.maximize_window()
+    driver_instance.implicitly_wait(10)
+
+    yield driver_instance
+
+    print(f"\n[Fixture] Quitting {browser_name} browser...")
+    driver_instance.quit()
 
 @pytest.fixture(scope="function", params=["chrome", "firefox", "edge"])
 def setup_browsers(request):
@@ -37,6 +90,7 @@ def setup_browsers(request):
         driver_instance = webdriver.Edge()
     else:
         raise ValueError(f"Unsupported browser: {browser_name}")
+
 
     driver_instance.maximize_window()
     driver_instance.implicitly_wait(10) # Implicit wait for elements
