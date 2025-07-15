@@ -2,15 +2,10 @@ import time
 import pytest
 from selenium import webdriver
 import json
-from selenium.webdriver.chrome.service import Service as ChromeService
-from selenium.webdriver.firefox.service import Service as FirefoxService
-from selenium.webdriver.edge.service import Service as EdgeService
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.webdriver.edge.options import Options as EdgeOptions
-from webdriver_manager.chrome import ChromeDriverManager
-from webdriver_manager.firefox import GeckoDriverManager
-from webdriver_manager.microsoft import EdgeChromiumDriverManager
+
 
 @pytest.fixture(scope="function")
 def load_data():
@@ -49,18 +44,18 @@ def driver_make(request):
             chrome_options.add_argument("--headless=new") # For newer Chrome versions
             chrome_options.add_argument("--disable-gpu")
             chrome_options.add_argument("--no-sandbox")
-        driver_instance = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
+        driver_instance = webdriver.Chrome(options=chrome_options)
     elif browser_name == "firefox":
         firefox_options = FirefoxOptions()
         if headless_mode:
             firefox_options.add_argument("-headless") # Firefox uses a different headless flag syntax
-        driver_instance = webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()), options=firefox_options)
+        driver_instance = webdriver.Firefox(options=firefox_options)
     elif browser_name == "edge":
         edge_options = EdgeOptions()
         if headless_mode:
             edge_options.add_argument("--headless=new")
             edge_options.add_argument("--disable-gpu")
-        driver_instance = webdriver.Edge(service=EdgeService(EdgeChromiumDriverManager().install()), options=edge_options)
+        driver_instance = webdriver.Edge(options=edge_options)
     else:
         pytest.fail(f"Unsupported browser: {browser_name}")
 
