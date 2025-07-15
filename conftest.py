@@ -84,7 +84,9 @@ def setup_browsers(request):
     elif browser_name == "edge":
         driver_instance = webdriver.Edge()
     else:
+        print("Exception")
         raise ValueError(f"Unsupported browser: {browser_name}")
+
 
 
     driver_instance.maximize_window()
