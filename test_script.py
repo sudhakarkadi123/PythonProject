@@ -30,10 +30,10 @@ def test_invoking(driver_make,data):
     print("username " + username)
     print("password " + password)
 
-@pytest.mark.skip
-def test_invoking123():
 
-    driver = webdriver.Chrome()
+def test_invoking123(driver_make):
+
+    driver = driver_make #webdriver.Chrome()
     print("Opening Browser")
     driver.implicitly_wait(30)
     driver.maximize_window()
